@@ -1,3 +1,3 @@
 # Space-Game
 
-![Game Play](graphics\game.gif)
+![Game Play](https://github.com/tdengs/Space-Game/blob/master/graphics/gif.gif)
