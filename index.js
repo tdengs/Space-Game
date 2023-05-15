@@ -1,3 +1,25 @@
+// set up an event emitter class that contains listeners using pub-sub pattern
+class EventEmitter {
+    constructor() {
+        this.subscribers = {};
+    }
+
+    // takes a message and a callback function, and adds the callback to the list of subscribers for that message
+    subscribe(message, subscriber) {
+        if (!this.subscribers[message]) {
+            this.subscribers[message] = [];
+        }
+        this.subscribers[message].push(subscriber);
+    }
+
+    // takes a message and payload, and invokes all the callbacks subscribed to that message with the provided arguments
+    publish(message, payload = null) {
+        if (this.subscribers[message]) {
+            this.subscribers[message].forEach(subscriber => subscriber(message, payload));
+        }
+    }
+}
+
 // set up game object class
 class GameObject {
     constructor(x, y, type) {
@@ -33,4 +55,30 @@ class Enemy extends MovableObject {
         super(x, y, "Enemy");
     }
 }
+
+// set up a message structure
+const Messages = {
+    HERO_MOVE_LEFT: 'HERO_MOVE_LEFT',
+    HERO_MOVE_RIGHT: 'HERO_MOVE_RIGHT'
+};
+
+// instantiate event emitter
+const eventEmitter = new EventEmitter();
+
+// instantiate player
+const player = new Player(0, 0);
+
+// let the event emitter know to watch for messages pertaining to movements of player, and act on it
+eventEmitter.subscribe(Messages.HERO_MOVE_LEFT, () => player.moveTo(5, 0));
+eventEmitter.subscribe(Messages.HERO_MOVE_RIGHT, () => player.moveTo(-5, 0));
+
+// set up the window to listen for the key up event
+window.addEventListener('keyup', (evt) => {
+    if (evt.key === 'ArrowLeft') {
+        eventEmitter.publish(Messages.HERO_MOVE_LEFT);
+    }
+    else if (evt.key === 'ArrowRight') {
+        eventEmitter.publish(Messages.HERO_MOVE_RIGHT);
+    }
+});
 
