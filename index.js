@@ -82,6 +82,20 @@ window.addEventListener('keyup', (evt) => {
     }
 });
 
+// create 5x5 enemies
+function createEnemies(ctx, canvas, enemyImg){
+    const MONSTER_TOTAL = 5;
+    const MONSTER_WIDTH = MONSTER_TOTAL * 98;
+    const START_X = (canvas.width - MONSTER_WIDTH)/2;
+    const STOP_X = START_X + MONSTER_WIDTH;
+
+    for (let x = START_X; x < STOP_X; x += 98){
+        for (let y = 0; y < 50 * 5; y += 50){
+            ctx.drawImage(enemyImg, x, y);
+        }
+    }
+}
+
 // load assets
 function loadAsset(path) {
     return new Promise((resolve, reject) => {
@@ -98,24 +112,32 @@ function loadAsset(path) {
     })
 }
 
-async function run() {
+window.onload = async () => {
+    canvas = document.getElementById('myCanvas');
+    ctx = canvas.getContext('2d');
+
+    let playerImg, enemyImg;
     try {
-      // load player and enemy graphics
-      const playerImg = await loadAsset('graphics/player.png');
-      const enemyImg = await loadAsset('graphics/enemy.png');
-  
-      canvas = document.getElementById('myCanvas');
-      ctx = canvas.getContext('2d');
-      ctx.drawImage(playerImg, 100, 100);
-      ctx.drawImage(enemyImg, 5, 0);
+        // load player and enemy graphics
+        playerImg = await loadAsset('graphics/player.png');
+        enemyImg = await loadAsset('graphics/enemy.png');
     } catch (error) {
-      console.log('Error:', error);
+        console.log('Error:', error);
     }
-  }
+    
+    // colour background black
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // draw player and hero images if loaded successfully
+    if(playerImg && enemyImg){
+        ctx.drawImage(playerImg, canvas.width/2 - 45, canvas.height - canvas.height/4);
+        createEnemies(ctx, canvas, enemyImg);
+    }
+}
   
 
 
-run();
 
 
 
