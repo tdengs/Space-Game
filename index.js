@@ -82,3 +82,40 @@ window.addEventListener('keyup', (evt) => {
     }
 });
 
+// load assets
+function loadAsset(path) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = path;
+      img.onload = () => {
+        // image loaded and ready to be used
+        resolve(img);
+      }
+      img.onerror = () => {
+        // image failed to load
+        reject(new Error(`Image failed to load: ${path}`));
+      }
+    })
+}
+
+async function run() {
+    try {
+      // load player and enemy graphics
+      const playerImg = await loadAsset('graphics/player.png');
+      const enemyImg = await loadAsset('graphics/enemy.png');
+  
+      canvas = document.getElementById('myCanvas');
+      ctx = canvas.getContext('2d');
+      ctx.drawImage(playerImg, 100, 100);
+      ctx.drawImage(enemyImg, 5, 0);
+    } catch (error) {
+      console.log('Error:', error);
+    }
+  }
+  
+
+
+run();
+
+
+
