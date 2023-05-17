@@ -65,7 +65,29 @@ class EventEmitter {
     }
 }
 
+// set up key event handlers
+let onKeyDown = function (e) {
+    console.log(e.keyCode);
+    switch (e.keyCode) {
+        // left arrow
+        case 37:
+        // right arrow
+        case 39:
+        // top arrow
+        case 38:
+        // bottom arrow
+        case 40:
+        // space bar
+        case 32:
+            e.preventDefault();
+            break;
+        // ignore other keys
+        default:
+            break;
+    }
+};
 
+window.addEventListener("keydown", onKeyDown);
 
 // set up a message structure
 const Messages = {
@@ -75,7 +97,14 @@ const Messages = {
     PLAYER_MOVE_DOWN: 'PLAYER_MOVE_DOWN',
 };
 
-const eventEmitter = new EventEmitter();
+let playerImg,
+    enemyImg,
+    laserImg,
+    canvas, ctx,
+    gameObjects = [],
+    player,
+    eventEmitter = new EventEmitter();
+
 
 // set up the window to listen for the key up event
 window.addEventListener('keyup', (evt) => {
