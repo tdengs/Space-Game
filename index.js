@@ -105,6 +105,18 @@ let playerImg,
     player,
     eventEmitter = new EventEmitter();
 
+function initGame() {
+    gameObjects = [];
+    createEnemies();
+    createPlayer();
+
+    // let the event emitter know to watch for messages pertaining to movements of player, and act on it
+    eventEmitter.subscribe(Messages.PLAYER_MOVE_LEFT, () => player.x -= 5);
+    eventEmitter.subscribe(Messages.PLAYER_MOVE_RIGHT, () => player.x += 5);
+    eventEmitter.subscribe(Messages.PLAYER_MOVE_UP, () => player.y -= 5);
+    eventEmitter.subscribe(Messages.PLAYER_MOVE_DOWN, () => player.y += 5);
+}
+
 
 // set up the window to listen for the key up event
 window.addEventListener('keyup', (evt) => {
