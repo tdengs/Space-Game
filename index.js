@@ -147,7 +147,7 @@ function createEnemies() {
 }
 
 function createPlayer(){
-    const player = new Player(canvas.width / 2 - 45, canvas.height - canvas.height / 4);
+    player = new Player(canvas.width / 2 - 45, canvas.height - canvas.height / 4);
     player.img = playerImg;
     gameObjects.push(player);
 }
