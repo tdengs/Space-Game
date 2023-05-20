@@ -65,6 +65,23 @@ class EventEmitter {
     }
 }
 
+
+// set up a message structure
+const Messages = {
+    PLAYER_MOVE_LEFT: ' PLAYER_MOVE_LEFT',
+    PLAYER_MOVE_RIGHT: 'PLAYER_MOVE_RIGHT',
+    PLAYER_MOVE_UP: 'PLAYER_MOVE_UP',
+    PLAYER_MOVE_DOWN: 'PLAYER_MOVE_DOWN',
+};
+
+let playerImg,
+    enemyImg,
+    laserImg,
+    canvas, ctx,
+    gameObjects = [],
+    player,
+    eventEmitter = new EventEmitter();
+
 // set up key event handlers
 let onKeyDown = function (e) {
     console.log(e.keyCode);
@@ -87,24 +104,6 @@ let onKeyDown = function (e) {
     }
 };
 
-window.addEventListener("keydown", onKeyDown);
-
-// set up a message structure
-const Messages = {
-    PLAYER_MOVE_LEFT: ' PLAYER_MOVE_LEFT',
-    PLAYER_MOVE_RIGHT: 'PLAYER_MOVE_RIGHT',
-    PLAYER_MOVE_UP: 'PLAYER_MOVE_UP',
-    PLAYER_MOVE_DOWN: 'PLAYER_MOVE_DOWN',
-};
-
-let playerImg,
-    enemyImg,
-    laserImg,
-    canvas, ctx,
-    gameObjects = [],
-    player,
-    eventEmitter = new EventEmitter();
-
 function initGame() {
     gameObjects = [];
     createEnemies();
@@ -117,6 +116,47 @@ function initGame() {
     eventEmitter.subscribe(Messages.PLAYER_MOVE_DOWN, () => player.y += 5);
 }
 
+function loadAsset(path) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = path;
+        img.onload = () => {
+            // image loaded and ready to be used
+            resolve(img);
+        }
+        img.onerror = () => {
+            // image failed to load
+            reject(new Error(`Image failed to load: ${path}`));
+        }
+    })
+}
+
+function createEnemies() {
+    const MONSTER_TOTAL = 5;
+    const MONSTER_WIDTH = MONSTER_TOTAL * 98;
+    const START_X = (canvas.width - MONSTER_WIDTH) / 2;
+    const STOP_X = START_X + MONSTER_WIDTH;
+
+    for (let x = START_X; x < STOP_X; x += 98) {
+        for (let y = 0; y < 50 * 5; y += 50) {
+            const enemy = new Enemy(x, y);
+            enemy.img = enemyImg;
+            gameObjects.push(enemy);
+        }
+    }
+}
+
+function createPlayer(){
+    const player = new Player(canvas.width / 2 - 45, canvas.height - canvas.height / 4);
+    player.img = playerImg;
+    gameObjects.push(player);
+}
+
+function drawGameObjects(){
+    gameObjects.forEach(obj => obj.draw(ctx));
+}
+
+window.addEventListener("keydown", onKeyDown);
 
 // set up the window to listen for the key up event
 window.addEventListener('keyup', (evt) => {
@@ -134,41 +174,11 @@ window.addEventListener('keyup', (evt) => {
     }
 });
 
-// create 5x5 enemies
-function createEnemies(ctx, canvas, enemyImg) {
-    const MONSTER_TOTAL = 5;
-    const MONSTER_WIDTH = MONSTER_TOTAL * 98;
-    const START_X = (canvas.width - MONSTER_WIDTH) / 2;
-    const STOP_X = START_X + MONSTER_WIDTH;
-
-    for (let x = START_X; x < STOP_X; x += 98) {
-        for (let y = 0; y < 50 * 5; y += 50) {
-            ctx.drawImage(enemyImg, x, y);
-        }
-    }
-}
-
-// load assets
-function loadAsset(path) {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = path;
-        img.onload = () => {
-            // image loaded and ready to be used
-            resolve(img);
-        }
-        img.onerror = () => {
-            // image failed to load
-            reject(new Error(`Image failed to load: ${path}`));
-        }
-    })
-}
 
 window.onload = async () => {
     canvas = document.getElementById('myCanvas');
     ctx = canvas.getContext('2d');
 
-    let playerImg, enemyImg;
     try {
         // load player and enemy graphics
         playerImg = await loadAsset('graphics/player.png');
@@ -177,15 +187,20 @@ window.onload = async () => {
         console.log('Error:', error);
     }
 
-    // colour background black
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // draw player and hero images if loaded successfully
+    // only load game if all images are loaded successfully
     if (playerImg && enemyImg) {
-        ctx.drawImage(playerImg, canvas.width / 2 - 45, canvas.height - canvas.height / 4);
-        createEnemies(ctx, canvas, enemyImg);
+        initGame();
     }
+    else{
+        // error screen
+    }
+
+    let gameLoop = setInterval(() =>{
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drawGameObjects(ctx);
+    }, 100);
 }
 
 
