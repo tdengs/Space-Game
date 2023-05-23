@@ -67,6 +67,24 @@ class Enemy extends GameObject {
     }
 }
 
+class Laser extends GameObject {
+    constructor(x, y){
+        super(x,y);
+        this.type = 'Laser';
+        (this.width = 9), (this.height = 33);
+        // this.img
+        let id = setInterval(() => {
+            if(this.y > 0){
+                this.y -= 15;
+            }
+            else{
+                this.dead = true;
+                clearInterval(id);
+            }
+        }, 100)
+    }
+}
+
 // set up an event emitter class that contains listeners using pub-sub pattern
 class EventEmitter {
     constructor() {
@@ -202,6 +220,8 @@ function drawGameObjects(){
     gameObjects.forEach(obj => obj.draw(ctx));
 }
 
+
+
 // to detect collision
 function intersectRect(r1, r2){
     return (
@@ -239,15 +259,16 @@ window.onload = async () => {
     ctx = canvas.getContext('2d');
 
     try {
-        // load player and enemy graphics
+        // load player, enemy and laser graphics
         playerImg = await loadAsset('graphics/player.png');
         enemyImg = await loadAsset('graphics/enemy.png');
+        laserImg = await loadAsset('graphics/laserGreen.png');
     } catch (error) {
         console.log('Error:', error);
     }
 
     // only load game if all images are loaded successfully
-    if (playerImg && enemyImg) {
+    if (playerImg && enemyImg && laserImg) {
         initGame();
     }
     else{
