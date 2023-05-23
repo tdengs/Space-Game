@@ -159,10 +159,29 @@ function initGame() {
     createPlayer();
 
     // let the event emitter know to watch for messages pertaining to movements of player, and act on it
-    eventEmitter.subscribe(Messages.PLAYER_MOVE_LEFT, () => player.x -= 5);
-    eventEmitter.subscribe(Messages.PLAYER_MOVE_RIGHT, () => player.x += 5);
-    eventEmitter.subscribe(Messages.PLAYER_MOVE_UP, () => player.y -= 5);
-    eventEmitter.subscribe(Messages.PLAYER_MOVE_DOWN, () => player.y += 5);
+    // check that player does not exceed canvas boundary
+    eventEmitter.subscribe(Messages.PLAYER_MOVE_LEFT, () => {
+        if (player.x >= 0){
+            player.x -= 5
+        }
+    });
+    eventEmitter.subscribe(Messages.PLAYER_MOVE_RIGHT, () => {
+        if ((player.x + player.width) <= canvas.width){
+            console.log(player.x + player.width);
+            console.log(canvas.width);
+            player.x += 5
+        }
+    });
+    eventEmitter.subscribe(Messages.PLAYER_MOVE_UP, () => {
+        if (player.y >= 0){
+            player.y -= 5
+        }
+    });
+    eventEmitter.subscribe(Messages.PLAYER_MOVE_DOWN, () => {
+        if ((player.y + player.height) <= canvas.height){
+            player.y += 5
+        }
+    });
     eventEmitter.subscribe(Messages.KEY_EVENT_SPACE, () => {
         if (player.canFire()){
             player.fire()
