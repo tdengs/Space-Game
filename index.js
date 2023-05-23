@@ -74,6 +74,16 @@ class EventEmitter {
     }
 }
 
+// a timer that ensures laser can only be fired so often
+class Cooldown{
+    constructor(time){
+        this.cool = false;
+        setTimeout(() => {
+            this.cool = true
+        }, time)
+    }
+}
+
 
 // set up a message structure
 const Messages = {
@@ -163,6 +173,16 @@ function createPlayer(){
 
 function drawGameObjects(){
     gameObjects.forEach(obj => obj.draw(ctx));
+}
+
+// to detect collision
+function intersectRect(r1, r2){
+    return !(
+        r1.right > r2.left ||
+        r1.left < r2.right ||
+        r1.top > r2.bottom ||
+        r1.bottom < r2.top
+    );
 }
 
 window.addEventListener("keydown", onKeyDown);
