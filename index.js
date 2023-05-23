@@ -220,7 +220,21 @@ function drawGameObjects(){
     gameObjects.forEach(obj => obj.draw(ctx));
 }
 
+function updateGameObjects(){
+    const enemies = gameObjects.filter(obj => obj.type === 'Enemy');
+    const lasers = gameObjects.filter(obj => obj.type === 'Laser');
 
+    // laser hit enemies
+    lasers.forEach((l) => {
+        enemies.forEach((e) => {
+            if(intersectRect(l.rectFromGameObject(), e.rectFromGameObject())){
+                eventEmitter.publish(Messages.COLLISION_ENEMY_LASER, {first: l, second: m});
+            }
+        });
+    });
+
+    gameObjects.filter(obj => !obj.dead);
+}
 
 // to detect collision
 function intersectRect(r1, r2){
@@ -279,6 +293,7 @@ window.onload = async () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        updateGameObjects();
         drawGameObjects(ctx);
     }, 100);
 }
