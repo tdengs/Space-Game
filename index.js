@@ -20,7 +20,7 @@ class GameObject {
             top: this.y,
             left: this.x,
             bottom: this.y + this.height,
-            up: this.x + this.width
+            right: this.x + this.width,
         };
     }
 }
@@ -32,21 +32,25 @@ class Player extends GameObject {
         this.type = 'Player';
         (this.width = 99), (this.height = 75);
         this.speed = { x: 0, y: 0 };
-        this.cooldown = false
+        this.cooldown = 0;
     }
 
     fire(){
-        if(!this.cooldown || this.cooldown.cool){
-            // produce a laser
-            this.cooldown = new Cooldown(500);
-        } 
-        else{
-            // do nothing - it hasn't cool down yet
-        }
+        gameObjects.push(new Laser(this.x + 45, this.y - 10));
+        this.cooldown = 500;
+
+        let id = setInterval(() => {
+            if (this.cooldown > 0){
+                this.cooldown -= 100;
+            }
+            else{
+                clearInterval(id);
+            }
+        }, 200);
     }
 
     canFire(){
-        return (this.cooldown == false);
+        return (this.cooldown === 0);
     }
 }
 
@@ -72,7 +76,7 @@ class Laser extends GameObject {
         super(x,y);
         this.type = 'Laser';
         (this.width = 9), (this.height = 33);
-        // this.img
+        this.img = laserImg;
         let id = setInterval(() => {
             if(this.y > 0){
                 this.y -= 15;
@@ -106,17 +110,6 @@ class EventEmitter {
         }
     }
 }
-
-// a timer that ensures laser can only be fired so often
-class Cooldown{
-    constructor(time){
-        this.cool = false;
-        setTimeout(() => {
-            this.cool = true
-        }, time)
-    }
-}
-
 
 // set up a message structure
 const Messages = {
@@ -228,22 +221,17 @@ function updateGameObjects(){
     lasers.forEach((l) => {
         enemies.forEach((e) => {
             if(intersectRect(l.rectFromGameObject(), e.rectFromGameObject())){
-                eventEmitter.publish(Messages.COLLISION_ENEMY_LASER, {first: l, second: m});
+                eventEmitter.publish(Messages.COLLISION_ENEMY_LASER, {first: l, second: e});
             }
         });
     });
 
-    gameObjects.filter(obj => !obj.dead);
+    gameObjects = gameObjects.filter(obj => !obj.dead);
 }
 
 // to detect collision
 function intersectRect(r1, r2){
-    return (
-        r1.right > r2.left ||
-        r1.left < r2.right ||
-        r1.top > r2.bottom ||
-        r1.bottom < r2.top
-    );
+    return !(r2.left > r1.right || r2.right < r1.left || r2.top > r1.bottom || r2.bottom < r1.top);
 }
 
 window.addEventListener("keydown", onKeyDown);
