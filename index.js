@@ -84,6 +84,22 @@ class Cooldown{
     }
 }
 
+class Weapon{
+    constructor(){
+    }
+
+    fire(){
+        if(!this.cooldown || this.cooldown.cool){
+            // produce a laser
+            this.cooldown = new Cooldown(500);
+        } 
+        else{
+            // do nothing - it hasn't cool down yet
+        }
+    }
+
+}
+
 
 // set up a message structure
 const Messages = {
