@@ -167,8 +167,6 @@ function initGame() {
     });
     eventEmitter.subscribe(Messages.PLAYER_MOVE_RIGHT, () => {
         if ((player.x + player.width) <= canvas.width){
-            console.log(player.x + player.width);
-            console.log(canvas.width);
             player.x += 5
         }
     });
