@@ -14,6 +14,15 @@ class GameObject {
     draw(ctx) {
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
     }
+
+    rectFromGameObject(){
+        return{
+            top: this.y,
+            left: this.x,
+            bottom: this.y + this.height,
+            up: this.x + this.width
+        };
+    }
 }
 
 // set up player object class
