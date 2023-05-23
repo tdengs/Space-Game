@@ -32,6 +32,21 @@ class Player extends GameObject {
         this.type = 'Player';
         (this.width = 99), (this.height = 75);
         this.speed = { x: 0, y: 0 };
+        this.cooldown = false
+    }
+
+    fire(){
+        if(!this.cooldown || this.cooldown.cool){
+            // produce a laser
+            this.cooldown = new Cooldown(500);
+        } 
+        else{
+            // do nothing - it hasn't cool down yet
+        }
+    }
+
+    canFire(){
+        return (this.cooldown == false);
     }
 }
 
@@ -84,29 +99,13 @@ class Cooldown{
     }
 }
 
-class Weapon{
-    constructor(){
-    }
-
-    fire(){
-        if(!this.cooldown || this.cooldown.cool){
-            // produce a laser
-            this.cooldown = new Cooldown(500);
-        } 
-        else{
-            // do nothing - it hasn't cool down yet
-        }
-    }
-
-}
-
 
 // set up a message structure
 const Messages = {
     PLAYER_MOVE_LEFT: ' PLAYER_MOVE_LEFT',
     PLAYER_MOVE_RIGHT: 'PLAYER_MOVE_RIGHT',
     PLAYER_MOVE_UP: 'PLAYER_MOVE_UP',
-    PLAYER_MOVE_DOWN: 'PLAYER_MOVE_DOWN',
+    PLAYER_MOVE_DOWN: 'PLAYER_MOVE_DOWN'
 };
 
 let playerImg,
@@ -193,7 +192,7 @@ function drawGameObjects(){
 
 // to detect collision
 function intersectRect(r1, r2){
-    return !(
+    return (
         r1.right > r2.left ||
         r1.left < r2.right ||
         r1.top > r2.bottom ||
