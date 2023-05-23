@@ -105,7 +105,10 @@ const Messages = {
     PLAYER_MOVE_LEFT: ' PLAYER_MOVE_LEFT',
     PLAYER_MOVE_RIGHT: 'PLAYER_MOVE_RIGHT',
     PLAYER_MOVE_UP: 'PLAYER_MOVE_UP',
-    PLAYER_MOVE_DOWN: 'PLAYER_MOVE_DOWN'
+    PLAYER_MOVE_DOWN: 'PLAYER_MOVE_DOWN',
+    KEY_EVENT_SPACE: 'KEY_EVENT_SPACE',
+    COLLISION_ENEMY_LASER: 'COLLISION_ENEMY_LASER',
+    COLLISION_ENEMY_PLAYER: 'COLLISION_ENEMY_PLAYER'
 };
 
 let playerImg,
@@ -148,6 +151,15 @@ function initGame() {
     eventEmitter.subscribe(Messages.PLAYER_MOVE_RIGHT, () => player.x += 5);
     eventEmitter.subscribe(Messages.PLAYER_MOVE_UP, () => player.y -= 5);
     eventEmitter.subscribe(Messages.PLAYER_MOVE_DOWN, () => player.y += 5);
+    eventEmitter.subscribe(Messages.KEY_EVENT_SPACE, () => {
+        if (player.canFire()){
+            player.fire()
+        }
+    })
+    eventEmitter.subscribe(Messages.COLLISION_ENEMY_LASER, (_, {first, second}) => {
+        first.dead = true;
+        second.dead = true;
+    })
 }
 
 function loadAsset(path) {
@@ -215,6 +227,9 @@ window.addEventListener('keyup', (evt) => {
     }
     else if (evt.key === 'ArrowDown') {
         eventEmitter.publish(Messages.PLAYER_MOVE_DOWN);
+    }
+    else if (evt.key === ' '){
+        eventEmitter.publish(Messages.KEY_EVENT_SPACE);
     }
 });
 
