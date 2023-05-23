@@ -125,6 +125,7 @@ const Messages = {
 let playerImg,
     enemyImg,
     laserImg,
+    lifeImg,
     canvas, ctx,
     gameObjects = [],
     player,
@@ -170,6 +171,9 @@ function initGame() {
     eventEmitter.subscribe(Messages.COLLISION_ENEMY_LASER, (_, {first, second}) => {
         first.dead = true;
         second.dead = true;
+    })
+    eventEmitter.subscribe(Messages.COLLISION_ENEMY_PLAYER, (_, {enemy}) => {
+        enemy.dead = true;
     })
 }
 
@@ -226,6 +230,14 @@ function updateGameObjects(){
         });
     });
 
+    // player hit enemies
+    enemies.forEach((e) => {
+        const playerRect = player.rectFromGameObject();
+        if (intersectRect(playerRect, e.rectFromGameObject())){
+            eventEmitter.publish(Messages.COLLISION_ENEMY_PLAYER, {enemy: e});
+        }
+    })
+
     gameObjects = gameObjects.filter(obj => !obj.dead);
 }
 
@@ -265,6 +277,7 @@ window.onload = async () => {
         playerImg = await loadAsset('graphics/player.png');
         enemyImg = await loadAsset('graphics/enemy.png');
         laserImg = await loadAsset('graphics/laserGreen.png');
+        lifeImg = await loadAsset('graphics/life.png');
     } catch (error) {
         console.log('Error:', error);
     }
