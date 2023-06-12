@@ -54,6 +54,17 @@ class Player extends GameObject {
     canFire(){
         return (this.cooldown === 0);
     }
+
+    decrementLife(){
+        this.life --;
+        if (this.life == 0){
+            this.dead = true;
+        }
+    }
+
+    incrementPoints(){
+        this.points += 100;
+    }
 }
 
 // set up enemy object class
@@ -190,9 +201,11 @@ function initGame() {
     eventEmitter.subscribe(Messages.COLLISION_ENEMY_LASER, (_, {first, second}) => {
         first.dead = true;
         second.dead = true;
+        player.incrementPoints();
     })
     eventEmitter.subscribe(Messages.COLLISION_ENEMY_PLAYER, (_, {enemy}) => {
         enemy.dead = true;
+        player.decrementLife();
     })
 }
 
