@@ -271,6 +271,15 @@ function drawText(message, x, y){
     ctx.fillText(message, x, y);
 }
 
+function isPlayerDead(){
+    return player.dead = true;
+}
+
+function isEnemiesDead(){
+    const enemies = gameObjects.filter((obj) => obj.type === "Enemy" && !obj.dead);
+    return enemies.length === 0;
+}
+
 function updateGameObjects(){
     const enemies = gameObjects.filter(obj => obj.type === 'Enemy');
     const lasers = gameObjects.filter(obj => obj.type === 'Laser');
