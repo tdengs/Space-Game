@@ -247,6 +247,17 @@ function drawLife(){
     }
 }
 
+function drawPoints(){
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "red";
+    ctx.textAlign = "left";
+    drawText("Points: " + player.points, 10, canvas.height - 20);
+}
+
+function drawText(message, x, y){
+    ctx.fillText(message, x, y);
+}
+
 function updateGameObjects(){
     const enemies = gameObjects.filter(obj => obj.type === 'Enemy');
     const lasers = gameObjects.filter(obj => obj.type === 'Laser');
@@ -327,6 +338,7 @@ window.onload = async () => {
         updateGameObjects();
         drawGameObjects(ctx);
         drawLife();
+        drawPoints();
     }, 100);
 }
 
