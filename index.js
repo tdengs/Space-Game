@@ -33,6 +33,8 @@ class Player extends GameObject {
         (this.width = 99), (this.height = 75);
         this.speed = { x: 0, y: 0 };
         this.cooldown = 0;
+        this.life = 3;
+        this.points = 0;
     }
 
     fire(){
