@@ -236,6 +236,17 @@ function drawGameObjects(){
     gameObjects.forEach(obj => obj.draw(ctx));
 }
 
+function drawLife(){
+    const START_POS = canvas.width - 180
+    for(let i=0; i < player.life; i++){
+        ctx.drawImage(
+            lifeImg,
+            START_POS + (45 * (i+1)),
+            canvas.height - 37
+        );
+    }
+}
+
 function updateGameObjects(){
     const enemies = gameObjects.filter(obj => obj.type === 'Enemy');
     const lasers = gameObjects.filter(obj => obj.type === 'Laser');
@@ -315,6 +326,7 @@ window.onload = async () => {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         updateGameObjects();
         drawGameObjects(ctx);
+        drawLife();
     }, 100);
 }
 
