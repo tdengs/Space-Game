@@ -131,6 +131,7 @@ const Messages = {
     PLAYER_MOVE_UP: 'PLAYER_MOVE_UP',
     PLAYER_MOVE_DOWN: 'PLAYER_MOVE_DOWN',
     KEY_EVENT_SPACE: 'KEY_EVENT_SPACE',
+    KEY_EVENT_ENTER: 'KEY_EVENT_ENTER',
     COLLISION_ENEMY_LASER: 'COLLISION_ENEMY_LASER',
     COLLISION_ENEMY_PLAYER: 'COLLISION_ENEMY_PLAYER',
     GAME_END_WIN: 'GAME_END_WIN',
@@ -180,26 +181,35 @@ function initGame() {
             player.x -= 5
         }
     });
+    
     eventEmitter.subscribe(Messages.PLAYER_MOVE_RIGHT, () => {
         if ((player.x + player.width) <= canvas.width){
             player.x += 5
         }
     });
+
     eventEmitter.subscribe(Messages.PLAYER_MOVE_UP, () => {
         if (player.y >= 0){
             player.y -= 5
         }
     });
+
     eventEmitter.subscribe(Messages.PLAYER_MOVE_DOWN, () => {
         if ((player.y + player.height) <= canvas.height){
             player.y += 5
         }
     });
+
     eventEmitter.subscribe(Messages.KEY_EVENT_SPACE, () => {
         if (player.canFire()){
             player.fire()
         }
-    })
+    });
+
+    eventEmitter.subscribe(Messages.KEY_EVENT_ENTER, () => {
+        resetGame();
+    });
+
     eventEmitter.subscribe(Messages.COLLISION_ENEMY_LASER, (_, {first, second}) => {
         first.dead = true;
         second.dead = true;
@@ -208,7 +218,8 @@ function initGame() {
         if(isEnemiesDead()){
             eventEmitter.publish(Messages.GAME_END_WIN);
         }
-    })
+    });
+
     eventEmitter.subscribe(Messages.COLLISION_ENEMY_PLAYER, (_, {enemy}) => {
         enemy.dead = true;
         player.decrementLife();
@@ -221,15 +232,16 @@ function initGame() {
         if(isEnemiesDead()){
             eventEmitter.publish(Messages.GAME_END_WIN);
         }
-    })
+    });
 
     eventEmitter.subscribe(Messages.GAME_END_LOSE, () => {
         endGame(false);
-    })
+    });
 
     eventEmitter.subscribe(Messages.GAME_END_WIN, () => {
         endGame(true);
-    })
+    });
+
 }
 
 function loadAsset(path) {
@@ -350,6 +362,9 @@ window.addEventListener('keyup', (evt) => {
     }
     else if (evt.key === ' '){
         eventEmitter.publish(Messages.KEY_EVENT_SPACE);
+    }
+    else if (evt.key === 'Enter'){
+        eventEmitter.publish(Messages.KEY_EVENT_ENTER);
     }
 });
 
