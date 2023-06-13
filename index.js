@@ -181,7 +181,7 @@ function initGame() {
             player.x -= 5
         }
     });
-    
+
     eventEmitter.subscribe(Messages.PLAYER_MOVE_RIGHT, () => {
         if ((player.x + player.width) <= canvas.width){
             player.x += 5
@@ -306,6 +306,13 @@ function drawText(message, x, y){
     ctx.fillText(message, x, y);
 }
 
+function displayMessage(message, color = 'red'){
+    ctx.font = "30px Arial";
+    ctx.fillStyle = color;
+    ctx.textAlign = "center";
+    drawText(message, canvas.width/2, canvas.height/2);
+}
+
 function isPlayerDead(){
     return player.dead = true;
 }
@@ -343,6 +350,7 @@ function updateGameObjects(){
 function intersectRect(r1, r2){
     return !(r2.left > r1.right || r2.right < r1.left || r2.top > r1.bottom || r2.bottom < r1.top);
 }
+
 
 window.addEventListener("keydown", onKeyDown);
 
