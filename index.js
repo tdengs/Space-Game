@@ -351,6 +351,29 @@ function intersectRect(r1, r2){
     return !(r2.left > r1.right || r2.right < r1.left || r2.top > r1.bottom || r2.bottom < r1.top);
 }
 
+function endGame(win){
+    clearInterval(gameLoopId);
+
+    // set a dealy to make sure all paints have finished
+    setTimeout(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (win){
+            displayMessage(
+                "Victory!!! Press [Enter] to start a new game",
+                'green'
+            );
+        }
+        else{
+            displayMessage(
+                "You died!!! Press [Enter] to start a new game"
+            );
+        }
+    }, 200)
+}
+
 
 window.addEventListener("keydown", onKeyDown);
 
@@ -399,7 +422,7 @@ window.onload = async () => {
         // error screen
     }
 
-    let gameLoop = setInterval(() =>{
+    let gameLoopId = setInterval(() =>{
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'black';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
