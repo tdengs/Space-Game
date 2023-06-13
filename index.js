@@ -132,7 +132,9 @@ const Messages = {
     PLAYER_MOVE_DOWN: 'PLAYER_MOVE_DOWN',
     KEY_EVENT_SPACE: 'KEY_EVENT_SPACE',
     COLLISION_ENEMY_LASER: 'COLLISION_ENEMY_LASER',
-    COLLISION_ENEMY_PLAYER: 'COLLISION_ENEMY_PLAYER'
+    COLLISION_ENEMY_PLAYER: 'COLLISION_ENEMY_PLAYER',
+    GAME_END_WIN: 'GAME_END_WIN',
+    GAME_END_LOSE: 'GAME_END_LOSE'
 };
 
 let playerImg,
@@ -202,10 +204,31 @@ function initGame() {
         first.dead = true;
         second.dead = true;
         player.incrementPoints();
+
+        if(isEnemiesDead()){
+            eventEmitter.publish(Messages.GAME_END_WIN);
+        }
     })
     eventEmitter.subscribe(Messages.COLLISION_ENEMY_PLAYER, (_, {enemy}) => {
         enemy.dead = true;
         player.decrementLife();
+
+        if(isPlayerDead()){
+            eventEmitter.publish(Messages.GAME_END_LOSE);
+            return; // stop checking once player died
+        }
+
+        if(isEnemiesDead()){
+            eventEmitter.publish(Messages.GAME_END_WIN);
+        }
+    })
+
+    eventEmitter.subscribe(Messages.GAME_END_LOSE, () => {
+        endGame(false);
+    })
+
+    eventEmitter.subscribe(Messages.GAME_END_WIN, () => {
+        endGame(true);
     })
 }
 
