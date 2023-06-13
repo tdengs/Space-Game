@@ -122,6 +122,10 @@ class EventEmitter {
             this.subscribers[message].forEach(subscriber => subscriber(message, payload));
         }
     }
+
+    clear(){
+        this.subscribers = {};
+    }
 }
 
 // set up a message structure
@@ -145,11 +149,11 @@ let playerImg,
     canvas, ctx,
     gameObjects = [],
     player,
+    gameLoopId,
     eventEmitter = new EventEmitter();
 
 // set up key event handlers
 let onKeyDown = function (e) {
-    console.log(e.keyCode);
     switch (e.keyCode) {
         // left arrow
         case 37:
@@ -159,6 +163,8 @@ let onKeyDown = function (e) {
         case 38:
         // bottom arrow
         case 40:
+        // enter
+        case 13:
         // space bar
         case 32:
             e.preventDefault();
@@ -295,22 +301,23 @@ function drawLife(){
     }
 }
 
-function drawPoints(){
+function displayText(message, x, y){
+    ctx.fillText(message, x, y);
+}
+
+function displayPoints(){
     ctx.font = "30px Arial";
     ctx.fillStyle = "red";
     ctx.textAlign = "left";
-    drawText("Points: " + player.points, 10, canvas.height - 20);
-}
-
-function drawText(message, x, y){
-    ctx.fillText(message, x, y);
+    let message = "Points: " + player.points;
+    displayText(message, 10, canvas.height - 20);
 }
 
 function displayMessage(message, color = 'red'){
     ctx.font = "30px Arial";
     ctx.fillStyle = color;
     ctx.textAlign = "center";
-    drawText(message, canvas.width/2, canvas.height/2);
+    displayText(message, canvas.width/2, canvas.height/2);
 }
 
 function isPlayerDead(){
@@ -351,6 +358,18 @@ function intersectRect(r1, r2){
     return !(r2.left > r1.right || r2.right < r1.left || r2.top > r1.bottom || r2.bottom < r1.top);
 }
 
+function startGame(){
+    gameLoopId = setInterval(() =>{
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        updateGameObjects();
+        drawGameObjects(ctx);
+        drawLife();
+        displayPoints();
+    }, 100);
+}
+
 function endGame(win){
     clearInterval(gameLoopId);
 
@@ -374,6 +393,14 @@ function endGame(win){
     }, 200)
 }
 
+function resetGame(){
+    if (gameLoopId) {
+        clearInterval(gameLoopId);
+        eventEmitter.clear();
+        initGame();
+        startGame();
+    }
+}
 
 window.addEventListener("keydown", onKeyDown);
 
@@ -422,15 +449,7 @@ window.onload = async () => {
         // error screen
     }
 
-    let gameLoopId = setInterval(() =>{
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'black';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        updateGameObjects();
-        drawGameObjects(ctx);
-        drawLife();
-        drawPoints();
-    }, 100);
+    startGame();
 }
 
 
